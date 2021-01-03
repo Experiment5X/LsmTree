@@ -39,7 +39,7 @@ impl Segment {
     }
 
     pub fn new_from_file(file_name: String) -> Result<Segment, Error> {
-        let mut segment_file = File::open("test.seg")?;
+        let mut segment_file = File::open(file_name.clone())?;
 
         let mut buffer: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
         segment_file.read(&mut buffer)?;
@@ -53,7 +53,7 @@ impl Segment {
         let values = Segment::read_strings(&mut segment_file)?;
 
         Ok(Segment {
-            file_name: file_name,
+            file_name: file_name.clone(),
             keys: keys,
             values: values,
         })
@@ -116,9 +116,9 @@ impl Segment {
         Ok(())
     }
 
-    pub fn lookup(&self, lookup_key: String) -> Option<String> {
+    pub fn lookup(&self, lookup_key: &String) -> Option<String> {
         for (key_index, key) in self.keys.iter().enumerate() {
-            if *key == lookup_key {
+            if *key == *lookup_key {
                 return Some(self.values[key_index].clone());
             }
         }

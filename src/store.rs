@@ -1,11 +1,9 @@
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 
 pub mod segment;
 pub mod segment_index;
 
 pub struct Store {
-    full_store: HashMap<String, String>,
     mem_table: BTreeMap<String, String>,
     next_segment_index: i64,
     segments: Vec<segment_index::SegmentIndex>,
@@ -14,7 +12,6 @@ pub struct Store {
 impl Store {
     pub fn new() -> Store {
         Store {
-            full_store: HashMap::new(),
             mem_table: BTreeMap::new(),
             next_segment_index: 0,
             segments: Vec::new(),
@@ -22,7 +19,6 @@ impl Store {
     }
 
     pub fn put(&mut self, key: String, value: String) {
-        self.full_store.insert(key.clone(), value.clone());
         self.mem_table.insert(key.clone(), value.clone());
 
         if self.mem_table.len() >= segment::MAX_MEM_TABLE_KEYS {
@@ -34,14 +30,28 @@ impl Store {
         }
     }
 
-    pub fn iter(
-        &self,
-    ) -> std::collections::hash_map::Iter<'_, std::string::String, std::string::String> {
-        self.full_store.iter()
-    }
+    pub fn lookup(&self, key: String) -> Option<String> {
+        match self.mem_table.get(&key) {
+            Some(value) => Some(value.clone()),
+            None => {
+                for segment_index in (0..self.next_segment_index).rev() {
+                    let current_segment = match segment::Segment::new_from_file(format!(
+                        "segment-{}.seg",
+                        segment_index
+                    )) {
+                        Ok(seg) => seg,
+                        Err(_) => return None,
+                    };
 
-    pub fn get(&self, key: String) -> Option<String> {
-        None
+                    match current_segment.lookup(&key) {
+                        Some(value) => return Some(value),
+                        None => (),
+                    };
+                }
+
+                None
+            }
+        }
     }
 
     pub fn persist_mem_table_to_segment(&mut self) -> segment::Segment {

@@ -22,6 +22,16 @@ fn main() {
         kv_store.put(format!("ronny-{}", i), format!("grease-{}", i));
     }
 
+    println!("Doing big lookup test: ");
+    match kv_store.lookup("justin".to_string()) {
+        Some(value) => println!("result: {}", value),
+        None => println!("Not found"),
+    };
+    match kv_store.lookup("adam".to_string()) {
+        Some(value) => println!("result: {}", value),
+        None => println!("Not found"),
+    };
+
     // match store::segment::Segment::new_from_file("test.seg".to_string()) {
     //     Ok(segment) => {
     //         print!("Segment Store: ");
