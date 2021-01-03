@@ -1,3 +1,6 @@
+use std::io;
+use std::io::Write;
+
 mod store;
 
 fn main() {
@@ -22,38 +25,23 @@ fn main() {
         kv_store.put(format!("ronny-{}", i), format!("grease-{}", i));
     }
 
-    println!("Doing big lookup test: ");
-    match kv_store.lookup("justin".to_string()) {
-        Some(value) => println!("result: {}", value),
-        None => println!("Not found"),
-    };
-    match kv_store.lookup("adam".to_string()) {
-        Some(value) => println!("result: {}", value),
-        None => println!("Not found"),
-    };
+    println!("Welcome to Adam's Key Value Store");
+    loop {
+        print!("> ");
+        io::stdout().flush();
 
-    // match store::segment::Segment::new_from_file("test.seg".to_string()) {
-    //     Ok(segment) => {
-    //         print!("Segment Store: ");
-    //         for key in segment.keys.iter() {
-    //             print!("{},  ", key);
-    //         }
-    //         println!();
+        let mut line = String::new();
+        match std::io::stdin().read_line(&mut line) {
+            Ok(_) => (),
+            Err(_) => (),
+        };
 
-    //         let value = match segment.lookup("jill".to_string()) {
-    //             Some(v) => v,
-    //             None => "Couldn't lookup value".to_string(),
-    //         };
-    //         println!("value: {}", value);
-    //     }
-    //     Err(_) => println!("Error"),
-    // }
-
-    // print!("Store: ");
-    // for (key, value) in kv_store.iter() {
-    //     print!("{} -> {}, ", key, value);
-    // }
-    // println!();
-
-    // println!("Hello, world!");
+        if line.starts_with("get ") {
+            let key = line.replace("get ", "").replace("\n", "");
+            match kv_store.lookup(key) {
+                Some(value) => println!("{}", value),
+                None => println!("* Not found *"),
+            };
+        }
+    }
 }
