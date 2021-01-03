@@ -105,8 +105,8 @@ impl Segment {
         Ok(())
     }
 
-    pub fn write_to_file(&self) -> Result<(), Error> {
-        let mut segment_file = File::create("test.seg")?;
+    pub fn write_to_file(&self, index: i64) -> Result<(), Error> {
+        let mut segment_file = File::create(format!("segment-{}.seg", index))?;
 
         segment_file.write(&MAX_MEM_TABLE_KEYS.to_ne_bytes())?;
 

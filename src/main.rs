@@ -18,6 +18,10 @@ fn main() {
     kv_store.put("sally".to_string(), "meatloaf".to_string());
     kv_store.put("justin".to_string(), "pancakes".to_string());
 
+    for i in 0..25 {
+        kv_store.put(format!("ronny-{}", i), format!("grease-{}", i));
+    }
+
     // match store::segment::Segment::new_from_file("test.seg".to_string()) {
     //     Ok(segment) => {
     //         print!("Segment Store: ");
