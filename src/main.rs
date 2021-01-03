@@ -17,6 +17,17 @@ fn main() {
     kv_store.put("sally".to_string(), "meatloaf".to_string());
     kv_store.put("justin".to_string(), "pancakes".to_string());
 
+    match store::segment::Segment::new_from_file("test.seg".to_string()) {
+        Ok(segment) => {
+            print!("Segment Store: ");
+            for key in segment.keys.iter() {
+                print!("{}", key);
+            }
+            println!();
+        }
+        Err(_) => println!("Error"),
+    }
+
     print!("Store: ");
     for (key, value) in kv_store.iter() {
         print!("{} -> {}, ", key, value);

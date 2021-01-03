@@ -3,3 +3,12 @@
 [[package]]
 name = "adams_sql"
 version = "0.1.0"
+dependencies = [
+ "file-utils",
+]
+
+[[package]]
+name = "file-utils"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a69cd243d774aa2a8e70c5d06cc57f41559ad471e18bdd1766dd3bef7b83ab4"
