@@ -115,4 +115,14 @@ impl Segment {
 
         Ok(())
     }
+
+    pub fn lookup(&self, lookup_key: String) -> Option<String> {
+        for (key_index, key) in self.keys.iter().enumerate() {
+            if *key == lookup_key {
+                return Some(self.values[key_index].clone());
+            }
+        }
+
+        return None;
+    }
 }
