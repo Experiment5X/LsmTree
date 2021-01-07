@@ -43,5 +43,24 @@ fn main() {
                 None => println!("* Not found *"),
             };
         }
+
+        if line.starts_with("del ") {
+            let key = line.replace("del ", "").replace("\n", "");
+            kv_store.delete(key)
+        }
+
+        if line.starts_with("put ") {
+            let line_cleaned = line.replace("put ", "").replace("\n", "");
+            let components: Vec<&str> = line_cleaned.split(" ").collect();
+
+            if components.len() != 2 {
+                println!("")
+            }
+
+            let key = components[0];
+            let value = components[1];
+
+            kv_store.put(key.to_string().clone(), value.to_string().clone());
+        }
     }
 }

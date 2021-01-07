@@ -9,6 +9,8 @@ pub struct Store {
     segments: Vec<segment_index::SegmentIndex>,
 }
 
+const TOMBSTONE: &str = "***TOMBSTONE***";
+
 impl Store {
     pub fn new() -> Store {
         Store {
@@ -30,9 +32,21 @@ impl Store {
         }
     }
 
+    pub fn delete(&mut self, key: String) {
+        return self.put(key, TOMBSTONE.to_string());
+    }
+
+    fn handle_tombstone(value: &String) -> Option<String> {
+        return if *value == TOMBSTONE.to_string() {
+            None
+        } else {
+            Some(value.clone())
+        };
+    }
+
     pub fn lookup(&self, key: String) -> Option<String> {
         match self.mem_table.get(&key) {
-            Some(value) => Some(value.clone()),
+            Some(value) => return Store::handle_tombstone(value),
             None => {
                 for segment_index in (0..self.next_segment_index).rev() {
                     let current_segment = match segment::Segment::new_from_file(format!(
@@ -44,7 +58,7 @@ impl Store {
                     };
 
                     match current_segment.lookup(&key) {
-                        Some(value) => return Some(value),
+                        Some(value) => return Store::handle_tombstone(&value),
                         None => (),
                     };
                 }
